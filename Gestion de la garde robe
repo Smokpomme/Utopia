@@ -1,0 +1,102 @@
+mport json
+
+class GardeRobe:
+    def __init__(self):
+        self.garde_robe = {}
+        self.historique_achats = []
+
+    def ajouter_article(self):
+        nom_article = input("Entrez le nom de l'article : ")
+        categorie = input("Entrez la catégorie de l'article : ")
+        couleur = input("Entrez la couleur de l'article : ")
+        saison = input("Entrez la saison : ")
+        style = input("Entrez le style : ")
+        article = {
+            "catégorie": categorie,
+            "couleur": couleur,
+            "saison": saison,
+            "style": style
+        }
+        self.garde_robe[nom_article] = article
+        self.historique_achats.append(f"Achat : {nom_article} ({categorie}, {couleur}, {saison}, {style}) ajouté à la garde-robe.")
+
+    def modifier_article(self):
+        nom_article = input("Entrez le nom de l'article à modifier : ")
+        if nom_article in self.garde_robe:
+            nouvelle_categorie = input("Nouvelle catégorie : ")
+            nouvelle_couleur = input("Nouvelle couleur : ")
+            nouvelle_saison = input("Nouvelle saison : ")
+            nouveau_style = input("Nouveau style : ")
+            article = self.garde_robe[nom_article]
+            article["catégorie"] = nouvelle_categorie
+            article["couleur"] = nouvelle_couleur
+            article["saison"] = nouvelle_saison
+            article["style"] = nouveau_style
+            self.historique_achats.append(f"Modification : {nom_article} ({nouvelle_categorie}, {nouvelle_couleur}, {nouvelle_saison}, {nouveau_style}).")
+        else:
+            print(f"{nom_article} n'est pas présent dans la garde-robe.")
+
+    def supprimer_article(self):
+        nom_article = input("Entrez le nom de l'article à supprimer : ")
+        if nom_article in self.garde_robe:
+            del self.garde_robe[nom_article]
+            self.historique_achats.append(f"Suppression : {nom_article} retiré de la garde-robe.")
+        else:
+            print(f"{nom_article} n'est pas présent dans la garde-robe.")
+
+    def afficher_garde_robe(self):
+        print("Garde-robe de l'utilisateur :")
+        for article, details in self.garde_robe.items():
+            print(f"{article} ({details['catégorie']}, {details['couleur']}, {details['saison']}, {details['style']})")
+
+    def afficher_historique_achats(self):
+        print("Historique des achats :")
+        for achat in self.historique_achats:
+            print(achat)
+
+    def sauvegarder_garde_robe(self):
+        with open("garde_robe.json", "w") as fichier:
+            json.dump(self.garde_robe, fichier)
+
+    def charger_garde_robe(self):
+        try:
+            with open("garde_robe.json", "r") as fichier:
+                self.garde_robe = json.load(fichier)
+        except FileNotFoundError:
+            print("Fichier de garde-robe introuvable. La garde-robe est vide.")
+
+def menu_principal():
+    garde_robe = GardeRobe()
+    garde_robe.charger_garde_robe()
+
+    while True:
+        print("\nOptions :")
+        print("1. Ajouter un article")
+        print("2. Modifier un article")
+        print("3. Supprimer un article")
+        print("4. Afficher la garde-robe")
+        print("5. Afficher l'historique des achats")
+        print("6. Sauvegarder la garde-robe")
+        print("7. Quitter")
+
+        choix = input("Entrez le numéro de l'option : ")
+
+        if choix == "1":
+            garde_robe.ajouter_article()
+        elif choix == "2":
+            garde_robe.modifier_article()
+        elif choix == "3":
+            garde_robe.supprimer_article()
+        elif choix == "4":
+            garde_robe.afficher_garde_robe()
+        elif choix == "5":
+            garde_robe.afficher_historique_achats()
+        elif choix == "6":
+            garde_robe.sauvegarder_garde_robe()
+        elif choix == "7":
+            break
+        else:
+            print("Option non valide. Veuillez choisir une option valide.")
+
+if __name__ == "__main__":
+    menu_principal()
