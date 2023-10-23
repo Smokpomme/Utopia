@@ -1,0 +1,85 @@
+import tkinter as tk
+
+class Vetements:
+    def __init__(self, nom, prix):
+        self.nom = nom
+        self.prix = prix
+
+class ListeDeSouhaitsApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Liste de Souhaits de Vêtements")
+
+        self.liste_souhaits = []
+
+        self.frame = tk.Frame(root)
+        self.frame.pack(padx=20, pady=20)
+
+        self.label = tk.Label(self.frame, text="Nom du vêtement:")
+        self.label.pack()
+
+        self.nom_var = tk.StringVar()
+        self.nom_entry = tk.Entry(self.frame, textvariable=self.nom_var)
+        self.nom_entry.pack()
+
+        self.label2 = tk.Label(self.frame, text="Prix du vêtement (en euros):")
+        self.label2.pack()
+
+        self.prix_var = tk.DoubleVar()
+        self.prix_entry = tk.Entry(self.frame, textvariable=self.prix_var)
+        self.prix_entry.pack()
+
+        self.ajouter_bouton = tk.Button(self.frame, text="Ajouter à la liste de souhaits", command=self.ajouter_vetement)
+        self.ajouter_bouton.pack()
+
+        self.liste_var = tk.StringVar()
+        self.liste_var.set("Liste de souhaits:\n")
+
+        self.liste_label = tk.Label(self.frame, textvariable=self.liste_var)
+        self.liste_label.pack()
+
+        self.retirer_label = tk.Label(self.frame, text="Nom du vêtement à retirer:")
+        self.retirer_label.pack()
+
+        self.retirer_var = tk.StringVar()
+        self.retirer_entry = tk.Entry(self.frame, textvariable=self.retirer_var)
+        self.retirer_entry.pack()
+
+        self.retirer_bouton = tk.Button(self.frame, text="Retirer de la liste", command=self.retirer_vetement)
+        self.retirer_bouton.pack()
+
+    def ajouter_vetement(self):
+        nom = self.nom_var.get()
+        prix = self.prix_var.get()
+
+        vetement = Vetements(nom, prix)
+        self.liste_souhaits.append(vetement)
+
+        self.nom_var.set("")
+        self.prix_var.set(0.0)
+
+        self.maj_affichage()
+
+    def retirer_vetement(self):
+        nom = self.retirer_var.get()
+
+        for vetement in self.liste_souhaits:
+            if vetement.nom == nom:
+                self.liste_souhaits.remove(vetement)
+                self.maj_affichage()
+                return
+
+        self.maj_affichage()
+
+    def maj_affichage(self):
+        liste_text = "Liste de souhaits:\n"
+        for vetement in self.liste_souhaits:
+            liste_text += f"{vetement.nom} - Prix : {vetement.prix} €\n"
+
+        self.liste_var.set(liste_text)
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = ListeDeSouhaitsApp(root)
+    root.mainloop()
+
