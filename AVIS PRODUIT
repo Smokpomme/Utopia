@@ -1,0 +1,93 @@
+import tkinter as tk
+from tkinter import messagebox
+
+class Produit:
+    def __init__(self, nom):
+        self.nom = nom
+        self.avis = []
+
+    def ajouter_avis(self, note, commentaire):
+        self.avis.append((note, commentaire))
+
+    def moyenne_notes(self):
+        if not self.avis:
+            return "Pas d'avis"
+        moyenne = sum([note for note, _ in self.avis]) / len(self.avis)
+        return f"Moyenne des notes : {moyenne:.2f}"
+
+class Application(tk.Tk):
+    def __init__(self):
+        super().__init__()
+
+        self.title("Système de Notation et Avis sur les Produits")
+
+        self.produits = []
+
+        self.frame = tk.Frame(self)
+        self.frame.pack(padx=20, pady=20)
+
+        self.label = tk.Label(self.frame, text="Nom du produit:")
+        self.label.pack()
+
+        self.nom_produit_var = tk.StringVar()
+        self.nom_produit_entry = tk.Entry(self.frame, textvariable=self.nom_produit_var)
+        self.nom_produit_entry.pack()
+
+        self.ajouter_produit_button = tk.Button(self.frame, text="Ajouter Produit", command=self.ajouter_produit)
+        self.ajouter_produit_button.pack()
+
+        self.note_label = tk.Label(self.frame, text="Note (1-5):")
+        self.note_label.pack()
+
+        self.note_var = tk.IntVar()
+        self.note_entry = tk.Entry(self.frame, textvariable=self.note_var)
+        self.note_entry.pack()
+
+        self.commentaire_label = tk.Label(self.frame, text="Commentaire:")
+        self.commentaire_label.pack()
+
+        self.commentaire_var = tk.StringVar()
+        self.commentaire_entry = tk.Entry(self.frame, textvariable=self.commentaire_var)
+        self.commentaire_entry.pack()
+
+        self.ajouter_avis_button = tk.Button(self.frame, text="Ajouter Avis", command=self.ajouter_avis)
+        self.ajouter_avis_button.pack()
+
+        self.liste_var = tk.StringVar()
+        self.liste_var.set("Liste des Produits:\n")
+        self.liste_produits_label = tk.Label(self.frame, textvariable=self.liste_var)
+        self.liste_produits_label.pack()
+
+    def ajouter_produit(self):
+        nom_produit = self.nom_produit_var.get()
+        if nom_produit:
+            produit = Produit(nom_produit)
+            self.produits.append(produit)
+            self.nom_produit_var.set("")
+            self.maj_affichage()
+
+    def ajouter_avis(self):
+        note = self.note_var.get()
+        commentaire = self.commentaire_var.get()
+        if note >= 1 and note <= 5:
+            produit_selectionne = self.produits[-1]  # Dernier produit ajouté
+            produit_selectionne.ajouter_avis(note, commentaire)
+            self.note_var.set(1)  # Réinitialiser la note à 1
+            self.commentaire_var.set("")
+            self.maj_affichage()
+        else:
+            messagebox.showerror("Erreur", "La note doit être entre 1 et 5.")
+
+    def maj_affichage(self):
+        liste_text = "Liste des Produits:\n"
+        for produit in self.produits:
+            liste_text += f"{produit.nom} - {produit.moyenne_notes()}\nAvis:\n"
+            for note, commentaire in produit.avis:
+                liste_text += f"Note : {note}, Commentaire : {commentaire}\n"
+            liste_text += "\n"
+
+        self.liste_var.set(liste_text)
+
+if __name__ == "__main__":
+    app = Application()
+    app.mainloop()
