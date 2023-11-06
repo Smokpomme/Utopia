@@ -1,0 +1,41 @@
+class Utilisateur:
+    def __init__(self, nom_utilisateur):
+        self.nom_utilisateur = nom_utilisateur
+        self.articles_partages = []
+
+    def partager_article(self, article, commentaire=None):
+        article_partage = ArticlePartage(self, article, commentaire)
+        self.articles_partages.append(article_partage)
+        return article_partage
+
+class Article:
+    def __init__(self, titre, contenu):
+        self.titre = titre
+        self.contenu = contenu
+
+class ArticlePartage:
+    def __init__(self, auteur, article, commentaire=None):
+        self.auteur = auteur
+        self.article = article
+        self.commentaire = commentaire
+
+utilisateur1 = Utilisateur("Alice")
+utilisateur2 = Utilisateur("Bob")
+
+article1 = Article("Nouvelle robe élégante", "Voici une nouvelle robe élégante que j'ai trouvée lors de mes achats.")
+article2 = Article("Meilleures offres du jour", "Découvrez les meilleures offres du jour sur notre site!")
+
+article_partage1 = utilisateur1.partager_article(article1, "J'adore cette robe!")
+article_partage2 = utilisateur2.partager_article(article2, "Des remises incroyables!")
+
+print(f"{utilisateur1.nom_utilisateur} a partagé :")
+print(f"Titre : {article_partage1.article.titre}")
+print(f"Contenu : {article_partage1.article.contenu}")
+if article_partage1.commentaire:
+    print(f"Commentaire : {article_partage1.commentaire}")
+
+print(f"{utilisateur2.nom_utilisateur} a partagé :")
+print(f"Titre : {article_partage2.article.titre}")
+print(f"Contenu : {article_partage2.article.contenu}")
+if article_partage2.commentaire:
+    print(f"Commentaire : {article_partage2.commentaire}")
