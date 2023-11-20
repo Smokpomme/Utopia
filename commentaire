@@ -19,14 +19,14 @@ class ArticlePartage:
         self.article = article
         self.commentaire = commentaire
 
-utilisateur1 = Utilisateur("Alice")
-utilisateur2 = Utilisateur("Bob")
+utilisateur1 = Utilisateur("")
+utilisateur2 = Utilisateur("")
 
-article1 = Article("Nouvelle robe élégante", "Voici une nouvelle robe élégante que j'ai trouvée lors de mes achats.")
-article2 = Article("Meilleures offres du jour", "Découvrez les meilleures offres du jour sur notre site!")
+article1 = Article("")
+article2 = Article()
 
-article_partage1 = utilisateur1.partager_article(article1, "J'adore cette robe!")
-article_partage2 = utilisateur2.partager_article(article2, "Des remises incroyables!")
+article_partage1 = utilisateur1.partager_article(article1, "")
+article_partage2 = utilisateur2.partager_article(article2, "")
 
 print(f"{utilisateur1.nom_utilisateur} a partagé :")
 print(f"Titre : {article_partage1.article.titre}")
