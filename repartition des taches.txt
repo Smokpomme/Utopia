@@ -1,8 +1,0 @@
-Erwan		= -Inscription et profil utilisateur
-		  -Catalogue de vêtements
-Maxence		= -Personnalisation
-
-Dina		= -Panier d'achat et paiement
-		  -Fonctionnalités sociales
-
-Zyad		= -Gestion de la garde-robe
