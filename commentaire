@@ -1,3 +1,6 @@
+import tkinter as tk
+from tkinter import simpledialog
+
 class Utilisateur:
     def __init__(self, nom_utilisateur):
         self.nom_utilisateur = nom_utilisateur
@@ -19,23 +22,52 @@ class ArticlePartage:
         self.article = article
         self.commentaire = commentaire
 
-utilisateur1 = Utilisateur("")
-utilisateur2 = Utilisateur("")
+class ArticlePartageViewer:
+    def __init__(self, root, utilisateur):
+        self.root = root
+        self.utilisateur = utilisateur
 
-article1 = Article("")
-article2 = Article()
+        # Créer une zone d'affichage pour les articles partagés
+        self.display_area = tk.Text(root, width=50, height=20)
+        self.display_area.pack()
 
-article_partage1 = utilisateur1.partager_article(article1, "")
-article_partage2 = utilisateur2.partager_article(article2, "")
+        # Créer un bouton pour ajouter un commentaire
+        self.comment_button = tk.Button(root, text="Ajouter un commentaire", command=self.ajouter_commentaire)
+        self.comment_button.pack()
 
-print(f"{utilisateur1.nom_utilisateur} a partagé :")
-print(f"Titre : {article_partage1.article.titre}")
-print(f"Contenu : {article_partage1.article.contenu}")
-if article_partage1.commentaire:
-    print(f"Commentaire : {article_partage1.commentaire}")
+        # Afficher les articles partagés
+        self.display_shared_articles()
 
-print(f"{utilisateur2.nom_utilisateur} a partagé :")
-print(f"Titre : {article_partage2.article.titre}")
-print(f"Contenu : {article_partage2.article.contenu}")
-if article_partage2.commentaire:
-    print(f"Commentaire : {article_partage2.commentaire}")
+    def display_shared_articles(self):
+        for article_partage in self.utilisateur.articles_partages:
+            self.display_area.insert(tk.END, f"{self.utilisateur.nom_utilisateur} a partagé :\n")
+            self.display_area.insert(tk.END, f"Titre : {article_partage.article.titre}\n")
+            self.display_area.insert(tk.END, f"Contenu : {article_partage.article.contenu}\n")
+            if article_partage.commentaire:
+                self.display_area.insert(tk.END, f"Commentaire : {article_partage.commentaire}\n\n")
+
+    def ajouter_commentaire(self):
+        commentaire = simpledialog.askstring("Ajouter un commentaire", "Entrez votre commentaire:")
+        if commentaire:
+            nouvel_article_partage = self.utilisateur.partager_article(self.utilisateur.articles_partages[-1].article, commentaire)
+            self.display_area.delete("1.0", tk.END)  # Effacer le texte existant
+            self.display_shared_articles()
+
+if __name__ == "__main__":
+    # Créer des instances d'utilisateurs et partager des articles
+    utilisateur1 = Utilisateur("Alice")
+    utilisateur2 = Utilisateur("Bob")
+
+    article1 = Article("Hoodie/ZIP", "Contenu de l'article 1")
+    article2 = Article("Vestes", "Contenu de l'article 2")
+
+    utilisateur1.partager_article(article1, "J'adore cet article!")
+    utilisateur2.partager_article(article2, "Des remises incroyables!")
+
+    # Créer une fenêtre pour afficher les articles partagés par chaque utilisateur
+    root = tk.Tk()
+
+    viewer1 = ArticlePartageViewer(root, utilisateur1)
+    viewer2 = ArticlePartageViewer(root, utilisateur2)
+
+    root.mainloop()
