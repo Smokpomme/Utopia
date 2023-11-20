@@ -1,73 +1,93 @@
 import tkinter as tk
-from tkinter import simpledialog
+from tkinter import messagebox
 
-class Utilisateur:
-    def __init__(self, nom_utilisateur):
-        self.nom_utilisateur = nom_utilisateur
-        self.articles_partages = []
+class Produit:
+    def __init__(self, nom):
+        self.nom = nom
+        self.avis = []
 
-    def partager_article(self, article, commentaire=None):
-        article_partage = ArticlePartage(self, article, commentaire)
-        self.articles_partages.append(article_partage)
-        return article_partage
+    def ajouter_avis(self, note, commentaire):
+        self.avis.append((note, commentaire))
 
-class Article:
-    def __init__(self, titre, contenu):
-        self.titre = titre
-        self.contenu = contenu
+    def moyenne_notes(self):
+        if not self.avis:
+            return "Pas d'avis"
+        moyenne = sum([note for note, _ in self.avis]) / len(self.avis)
+        return f"Moyenne des notes : {moyenne:.2f}"
 
-class ArticlePartage:
-    def __init__(self, auteur, article, commentaire=None):
-        self.auteur = auteur
-        self.article = article
-        self.commentaire = commentaire
+class Application(tk.Tk):
+    def __init__(self):
+        super().__init__()
 
-class ArticlePartageViewer:
-    def __init__(self, root, utilisateur):
-        self.root = root
-        self.utilisateur = utilisateur
+        self.title("Système de Notation et Avis sur les Produits")
 
-        # Créer une zone d'affichage pour les articles partagés
-        self.display_area = tk.Text(root, width=50, height=20)
-        self.display_area.pack()
+        self.produits = []
 
-        # Créer un bouton pour ajouter un commentaire
-        self.comment_button = tk.Button(root, text="Ajouter un commentaire", command=self.ajouter_commentaire)
-        self.comment_button.pack()
+        self.frame = tk.Frame(self)
+        self.frame.pack(padx=20, pady=20)
 
-        # Afficher les articles partagés
-        self.display_shared_articles()
+        self.label = tk.Label(self.frame, text="Nom du produit:")
+        self.label.pack()
 
-    def display_shared_articles(self):
-        for article_partage in self.utilisateur.articles_partages:
-            self.display_area.insert(tk.END, f"{self.utilisateur.nom_utilisateur} a partagé :\n")
-            self.display_area.insert(tk.END, f"Titre : {article_partage.article.titre}\n")
-            self.display_area.insert(tk.END, f"Contenu : {article_partage.article.contenu}\n")
-            if article_partage.commentaire:
-                self.display_area.insert(tk.END, f"Commentaire : {article_partage.commentaire}\n\n")
+        self.nom_produit_var = tk.StringVar()
+        self.nom_produit_entry = tk.Entry(self.frame, textvariable=self.nom_produit_var)
+        self.nom_produit_entry.pack()
 
-    def ajouter_commentaire(self):
-        commentaire = simpledialog.askstring("Ajouter un commentaire", "Entrez votre commentaire:")
-        if commentaire:
-            nouvel_article_partage = self.utilisateur.partager_article(self.utilisateur.articles_partages[-1].article, commentaire)
-            self.display_area.delete("1.0", tk.END)  # Effacer le texte existant
-            self.display_shared_articles()
+        self.ajouter_produit_button = tk.Button(self.frame, text="Ajouter Produit", command=self.ajouter_produit)
+        self.ajouter_produit_button.pack()
+
+        self.note_label = tk.Label(self.frame, text="Note (1-5):")
+        self.note_label.pack()
+
+        self.note_var = tk.IntVar()
+        self.note_entry = tk.Entry(self.frame, textvariable=self.note_var)
+        self.note_entry.pack()
+
+        self.commentaire_label = tk.Label(self.frame, text="Commentaire:")
+        self.commentaire_label.pack()
+
+        self.commentaire_var = tk.StringVar()
+        self.commentaire_entry = tk.Entry(self.frame, textvariable=self.commentaire_var)
+        self.commentaire_entry.pack()
+
+        self.ajouter_avis_button = tk.Button(self.frame, text="Ajouter Avis", command=self.ajouter_avis)
+        self.ajouter_avis_button.pack()
+
+        self.liste_var = tk.StringVar()
+        self.liste_var.set("Liste des Produits:\n")
+        self.liste_produits_label = tk.Label(self.frame, textvariable=self.liste_var)
+        self.liste_produits_label.pack()
+
+    def ajouter_produit(self):
+        nom_produit = self.nom_produit_var.get()
+        if nom_produit:
+            produit = Produit(nom_produit)
+            self.produits.append(produit)
+            self.nom_produit_var.set("")
+            self.maj_affichage()
+
+    def ajouter_avis(self):
+        note = self.note_var.get()
+        commentaire = self.commentaire_var.get()
+        if note >= 1 and note <= 5:
+            produit_selectionne = self.produits[-1]  # Dernier produit ajouté
+            produit_selectionne.ajouter_avis(note, commentaire)
+            self.note_var.set(1)  # Réinitialiser la note à 1
+            self.commentaire_var.set("")
+            self.maj_affichage()
+        else:
+            messagebox.showerror("Erreur", "La note doit être entre 1 et 5.")
+
+    def maj_affichage(self):
+        liste_text = "Liste des Produits:\n"
+        for produit in self.produits:
+            liste_text += f"{produit.nom} - {produit.moyenne_notes()}\nAvis:\n"
+            for note, commentaire in produit.avis:
+                liste_text += f"Note : {note}, Commentaire : {commentaire}\n"
+            liste_text += "\n"
+
+        self.liste_var.set(liste_text)
 
 if __name__ == "__main__":
-    # Créer des instances d'utilisateurs et partager des articles
-    utilisateur1 = Utilisateur("Alice")
-    utilisateur2 = Utilisateur("Bob")
-
-    article1 = Article("Hoodie/ZIP", "Contenu de l'article 1")
-    article2 = Article("Vestes", "Contenu de l'article 2")
-
-    utilisateur1.partager_article(article1, "J'adore cet article!")
-    utilisateur2.partager_article(article2, "Des remises incroyables!")
-
-    # Créer une fenêtre pour afficher les articles partagés par chaque utilisateur
-    root = tk.Tk()
-
-    viewer1 = ArticlePartageViewer(root, utilisateur1)
-    viewer2 = ArticlePartageViewer(root, utilisateur2)
-
-    root.mainloop()
+    app = Application()
+    app.mainloop()
