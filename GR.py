@@ -1,0 +1,200 @@
+import json
+import tkinter as tk
+from tkinter import messagebox
+
+class GardeRobe:
+    def __init__(self):
+        self.garde_robe = {}
+        self.historique_achats = []
+
+    def ajouter_article(self, nom_article, categorie, couleur, saison, style):
+        article = {
+            "catégorie": categorie,
+            "couleur": couleur,
+            "saison": saison,
+            "style": style
+        }
+        self.garde_robe[nom_article] = article
+        self.historique_achats.append(f"Achat : {nom_article} ({categorie}, {couleur}, {saison}, {style}) ajouté à la garde-robe.")
+        messagebox.showinfo("Information", "Article ajouté avec succès!")
+
+    def modifier_article(self, nom_article, nouvelle_categorie, nouvelle_couleur, nouvelle_saison, nouveau_style):
+        if nom_article in self.garde_robe:
+            article = self.garde_robe[nom_article]
+            article["catégorie"] = nouvelle_categorie
+            article["couleur"] = nouvelle_couleur
+            article["saison"] = nouvelle_saison
+            article["style"] = nouveau_style
+            self.historique_achats.append(f"Modification : {nom_article} ({nouvelle_categorie}, {nouvelle_couleur}, {nouvelle_saison}, {nouveau_style}).")
+            messagebox.showinfo("Information", "Article modifié avec succès!")
+        else:
+            messagebox.showerror("Erreur", f"{nom_article} n'est pas présent dans la garde-robe.")
+
+    def supprimer_article(self, nom_article):
+        if nom_article in self.garde_robe:
+            del self.garde_robe[nom_article]
+            self.historique_achats.append(f"Suppression : {nom_article} retiré de la garde-robe.")
+            messagebox.showinfo("Information", "Article supprimé avec succès!")
+        else:
+            messagebox.showerror("Erreur", f"{nom_article} n'est pas présent dans la garde-robe.")
+
+    def sauvegarder_garde_robe(self):
+        with open("garde_robe.json", "w") as fichier:
+            json.dump(self.garde_robe, fichier)
+        messagebox.showinfo("Information", "Garde-robe sauvegardée avec succès!")
+
+    def charger_garde_robe(self):
+        try:
+            with open("garde_robe.json", "r") as fichier:
+                self.garde_robe = json.load(fichier)
+        except FileNotFoundError:
+            messagebox.showinfo("Information", "Fichier de garde-robe introuvable. La garde-robe est vide.")
+
+class Application(tk.Tk):
+    def __init__(self):
+        super().__init__()
+
+        self.title("Garde-Robe Manager")
+        self.geometry("600x400")
+
+        self.garde_robe = GardeRobe()
+        self.garde_robe.charger_garde_robe()
+
+        self.create_widgets()
+
+    def create_widgets(self):
+        menu_frame = tk.Frame(self)
+        menu_frame.pack(pady=10)
+
+        options_label = tk.Label(menu_frame, text="Options:")
+        options_label.grid(row=0, column=0, padx=10)
+
+        add_button = tk.Button(menu_frame, text="Ajouter un article", command=self.ajouter_article_window)
+        add_button.grid(row=0, column=1, padx=10)
+
+        modify_button = tk.Button(menu_frame, text="Modifier un article", command=self.modifier_article_window)
+        modify_button.grid(row=0, column=2, padx=10)
+
+        delete_button = tk.Button(menu_frame, text="Supprimer un article", command=self.supprimer_article_window)
+        delete_button.grid(row=0, column=3, padx=10)
+
+        save_button = tk.Button(menu_frame, text="Sauvegarder la garde-robe", command=self.sauvegarder_garde_robe)
+        save_button.grid(row=0, column=4, padx=10)
+
+        refresh_button = tk.Button(menu_frame, text="Actualiser l'affichage", command=self.refresh_display)
+        refresh_button.grid(row=0, column=5, padx=10)
+
+        display_frame = tk.Frame(self)
+        display_frame.pack(pady=10)
+
+        display_label = tk.Label(display_frame, text="Affichage:")
+        display_label.grid(row=0, column=0, padx=10)
+
+        self.display_text = tk.Text(display_frame, height=10, width=50)
+        self.display_text.grid(row=1, column=0, padx=10)
+
+        self.refresh_display()
+
+    def ajouter_article_window(self):
+        window = tk.Toplevel(self)
+        window.title("Ajouter un article")
+
+        nom_label = tk.Label(window, text="Nom de l'article:")
+        nom_label.grid(row=0, column=0, padx=10, pady=5)
+        nom_entry = tk.Entry(window)
+        nom_entry.grid(row=0, column=1, padx=10, pady=5)
+
+        categorie_label = tk.Label(window, text="Catégorie:")
+        categorie_label.grid(row=1, column=0, padx=10, pady=5)
+        categorie_entry = tk.Entry(window)
+        categorie_entry.grid(row=1, column=1, padx=10, pady=5)
+
+        couleur_label = tk.Label(window, text="Couleur:")
+        couleur_label.grid(row=2, column=0, padx=10, pady=5)
+        couleur_entry = tk.Entry(window)
+        couleur_entry.grid(row=2, column=1, padx=10, pady=5)
+
+        saison_label = tk.Label(window, text="Saison:")
+        saison_label.grid(row=3, column=0, padx=10, pady=5)
+        saison_entry = tk.Entry(window)
+        saison_entry.grid(row=3, column=1, padx=10, pady=5)
+
+        style_label = tk.Label(window, text="Style:")
+        style_label.grid(row=4, column=0, padx=10, pady=5)
+        style_entry = tk.Entry(window)
+        style_entry.grid(row=4, column=1, padx=10, pady=5)
+
+        add_button = tk.Button(window, text="Ajouter", command=lambda: self.ajouter_article(nom_entry.get(), categorie_entry.get(), couleur_entry.get(), saison_entry.get(), style_entry.get(), window))
+        add_button.grid(row=5, column=0, columnspan=2, pady=10)
+
+    def ajouter_article(self, nom_article, categorie, couleur, saison, style, window):
+        self.garde_robe.ajouter_article(nom_article, categorie, couleur, saison, style)
+        self.refresh_display()
+        window.destroy()
+
+    def modifier_article_window(self):
+        window = tk.Toplevel(self)
+        window.title("Modifier un article")
+
+        nom_label = tk.Label(window, text="Nom de l'article:")
+        nom_label.grid(row=0, column=0, padx=10, pady=5)
+        nom_entry = tk.Entry(window)
+        nom_entry.grid(row=0, column=1, padx=10, pady=5)
+
+        categorie_label = tk.Label(window, text="Nouvelle catégorie:")
+        categorie_label.grid(row=1, column=0, padx=10, pady=5)
+        categorie_entry = tk.Entry(window)
+        categorie_entry.grid(row=1, column=1, padx=10, pady=5)
+
+        couleur_label = tk.Label(window, text="Nouvelle couleur:")
+        couleur_label.grid(row=2, column=0, padx=10, pady=5)
+        couleur_entry = tk.Entry(window)
+        couleur_entry.grid(row=2, column=1, padx=10, pady=5)
+
+        saison_label = tk.Label(window, text="Nouvelle saison:")
+        saison_label.grid(row=3, column=0, padx=10, pady=5)
+        saison_entry = tk.Entry(window)
+        saison_entry.grid(row=3, column=1, padx=10, pady=5)
+
+        style_label = tk.Label(window, text="Nouveau style:")
+        style_label.grid(row=4, column=0, padx=10, pady=5)
+        style_entry = tk.Entry(window)
+        style_entry.grid(row=4, column=1, padx=10, pady=5)
+
+        modify_button = tk.Button(window, text="Modifier", command=lambda: self.modifier_article(nom_entry.get(), categorie_entry.get(), couleur_entry.get(), saison_entry.get(), style_entry.get(), window))
+        modify_button.grid(row=5, column=0, columnspan=2, pady=10)
+
+    def modifier_article(self, nom_article, nouvelle_categorie, nouvelle_couleur, nouvelle_saison, nouveau_style, window):
+        self.garde_robe.modifier_article(nom_article, nouvelle_categorie, nouvelle_couleur, nouvelle_saison, nouveau_style)
+        self.refresh_display()
+        window.destroy()
+
+    def supprimer_article_window(self):
+        window = tk.Toplevel(self)
+        window.title("Supprimer un article")
+
+        nom_label = tk.Label(window, text="Nom de l'article à supprimer:")
+        nom_label.grid(row=0, column=0, padx=10, pady=5)
+        nom_entry = tk.Entry(window)
+        nom_entry.grid(row=0, column=1, padx=10, pady=5)
+
+        delete_button = tk.Button(window, text="Supprimer", command=lambda: self.supprimer_article(nom_entry.get(), window))
+        delete_button.grid(row=1, column=0, columnspan=2, pady=10)
+
+    def supprimer_article(self, nom_article, window):
+        self.garde_robe.supprimer_article(nom_article)
+        self.refresh_display()
+        window.destroy()
+
+    def sauvegarder_garde_robe(self):
+        self.garde_robe.sauvegarder_garde_robe()
+
+    def refresh_display(self):
+        self.display_text.delete(1.0, tk.END)
+        self.display_text.insert(tk.END, "Garde-robe de l'utilisateur :\n")
+        for article, details in self.garde_robe.garde_robe.items():
+            self.display_text.insert(tk.END, f"{article} ({details['catégorie']}, {details['couleur']}, {details['saison']}, {details['style']})\n")
+
+if __name__ == "__main__":
+    app = Application()
+    app.mainloop()
