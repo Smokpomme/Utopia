@@ -1,4 +1,7 @@
-class  Panier:
+import tkinter as tk
+from tkinter import simpledialog, messagebox
+
+class Panier:
     def __init__(self):
         self.articles = []
 
@@ -11,7 +14,7 @@ class  Panier:
     def calculer_total(self):
         total = 0
         for article in self.articles:
-            total += article['prix']
+            total += article.prix
         return total
 
 class Article:
@@ -19,46 +22,70 @@ class Article:
         self.nom = nom
         self.prix = prix
 
-panier = Panier()
+class UtopiaApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Utopia")
 
-while True:
-    print("Options :")
-    print("1. Ajouter un article au panier")
-    print("2. Vider le panier")
-    print("3. Afficher le panier")
-    print("4. Passer à la caisse")
-    print("5. Quitter")
+        # Créer une instance de Panier
+        self.panier = Panier()
 
-    choix = input("Choisissez une option : ")
+        # Créer les widgets de l'interface graphique
+        self.label = tk.Label(root, text="Bienvenue dans Utopia")
+        self.label.pack()
 
-    if choix == '1':
-        nom_article = input("Nom de l'article : ")
-        prix_article = float(input("Prix de l'article : "))
+        self.menu_frame = tk.Frame(root)
+        self.menu_frame.pack()
+
+        self.button_ajouter = tk.Button(self.menu_frame, text="Ajouter un article au panier", command=self.ajouter_article)
+        self.button_ajouter.pack(side=tk.LEFT)
+
+        self.button_vider = tk.Button(self.menu_frame, text="Vider le panier", command=self.vider_panier)
+        self.button_vider.pack(side=tk.LEFT)
+
+        self.button_afficher = tk.Button(self.menu_frame, text="Afficher le panier", command=self.afficher_panier)
+        self.button_afficher.pack(side=tk.LEFT)
+
+        self.button_caisse = tk.Button(self.menu_frame, text="Passer à la caisse", command=self.passer_a_la_caisse)
+        self.button_caisse.pack(side=tk.LEFT)
+
+        self.button_quitter = tk.Button(self.menu_frame, text="Quitter", command=self.root.destroy)
+        self.button_quitter.pack(side=tk.LEFT)
+
+    def ajouter_article(self):
+        nom_article = simpledialog.askstring("Ajouter un article", "Nom de l'article : ")
+        prix_article = float(simpledialog.askstring("Ajouter un article", "Prix de l'article : "))
         article = Article(nom_article, prix_article)
-        panier.ajouter_article(article)
-        print(f"{nom_article} a été ajouté au panier.")
-    elif choix == '2':
-        panier.vider_panier()
-        print("Le panier a été vidé.")
-    elif choix == '3':
-        print("Contenu du panier :")
-        for article in panier.articles:
-            print(f"{article.nom}: ${article.prix}")
-        print(f"Total du panier : ${panier.calculer_total()}")
-    elif choix == '4':
-        print("Options de paiement :")
-        print("1. Carte de crédit")
-        print("2. PayPal")
-        option_paiement = input("Choisissez une option de paiement : ")
-        if option_paiement == '1':
-            print("Paiement par carte de crédit en cours...")
-            # implémenter la logique de paiement par carte de crédit.
-        elif option_paiement == '2':
-            print("Paiement par PayPal en cours...")
-            # implémenter la logique de paiement par PayPal.
+        self.panier.ajouter_article(article)
+        messagebox.showinfo("Ajout au panier", f"{nom_article} a été ajouté au panier.")
+
+    def vider_panier(self):
+        self.panier.vider_panier()
+        messagebox.showinfo("Vider le panier", "Le panier a été vidé.")
+
+    def afficher_panier(self):
+        contenu_panier = "Contenu du panier :\n"
+        for article in self.panier.articles:
+            contenu_panier += f"{article.nom}: ${article.prix}\n"
+        contenu_panier += f"Total du panier : ${self.panier.calculer_total()}"
+        messagebox.showinfo("Panier", contenu_panier)
+
+    def passer_a_la_caisse(self):
+        total = self.panier.calculer_total()
+        if total > 0:
+            option_paiement = simpledialog.askstring("Options de paiement", "Choisissez une option de paiement :\n1. PayPal\n2. Carte bancaire")
+            if option_paiement == '1':
+                messagebox.showinfo("Paiement par PayPal", f"Le paiement de ${total} par PayPal a été effectué avec succès.")
+                self.panier.vider_panier()
+            elif option_paiement == '2':
+                messagebox.showinfo("Paiement par carte bancaire", f"Le paiement de ${total} par carte bancaire a été effectué avec succès.")
+                self.panier.vider_panier()
+            else:
+                messagebox.showwarning("Option de paiement invalide", "Veuillez choisir une option de paiement valide.")
         else:
-            print("Option de paiement invalide.")
-    elif choix == '5':
-        break
-    else:
-        print("Option invalide. Veuillez choisir une option valide.")
+            messagebox.showwarning("Panier vide", "Le panier est vide. Ajoutez des articles avant de passer à la caisse.")
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = UtopiaApp(root)
+    root.mainloop()
