@@ -842,7 +842,7 @@ class CartApp(tk.Toplevel):
               top = tk.Toplevel(self)
               top.title("Ajouter un article")
 
-              # Create entry fields
+              # Créer des champs de saisie
               nom_article_label = tk.Label(top, text="Nom de l'article:")
               nom_article_label.pack()
               nom_article_entry = tk.Entry(top)
@@ -893,12 +893,12 @@ class CartApp(tk.Toplevel):
           def paiement_carte_credit(self):
               self.text_widget.delete(1.0, tk.END)
               self.text_widget.insert(tk.END, "Paiement par carte de crédit en cours...\n")
-              # Implement logic for credit card payment.
+              #Implement logique pour le payement par carte de credit
 
           def paiement_paypal(self):
               self.text_widget.delete(1.0, tk.END)
               self.text_widget.insert(tk.END, "Paiement par PayPal en cours...\n")
-              # Implement logic for PayPal payment.
+              #Implement logique pour le payement PayPal
 
         if __name__ == "__main__":
           app = PanierApp()
