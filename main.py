@@ -10,10 +10,10 @@ class MainApp(tk.Tk):
         super().__init__()
         self.title("Application principale")
         self.geometry("500x500")
-      
+
         self.menu_label = tk.Label(self, text="Choisissez une fonctionnalité:")
         self.menu_label.pack(pady=10)
-      
+
         self.login_button = tk.Button(self, text="Se Connecter / S'enregistrer", command=self.open_login_register)
         self.login_button.pack()
 
@@ -25,7 +25,7 @@ class MainApp(tk.Tk):
 
         self.wardrobe_button = tk.Button(self, text="Garde-Robe", command=self.open_wardrobe_app)
         self.wardrobe_button.pack()
-      
+
         self.produits_button = tk.Button(self, text="Système de Notation et Avis sur les Produits", command=self.open_produits_app)
         self.produits_button.pack()
 
@@ -34,7 +34,7 @@ class MainApp(tk.Tk):
 
         self.cart_button = tk.Button(self, text="Panier d'Achats", command=self.open_cart_app)
         self.cart_button.pack()
-      
+
         self.quit_button = tk.Button(self, text="Quitter", command=self.destroy)
         self.quit_button.pack(pady=20)
 
@@ -109,8 +109,8 @@ class enregistreLog(tk.Toplevel):
               email = email_entry.get()
               password = password_entry.get()
               size = size_entry.get()
-              gender = gender_entry.get()
-              style_preferences = style_entry.get().split(',')
+              gender = gender_combobox.get()
+              style_preferences = style_combobox.get().split(',')
 
               create_user(username, email, password, size, gender, style_preferences)
               messagebox.showinfo("Succès", "Compte utilisateur créé avec succès!")
@@ -842,7 +842,7 @@ class CartApp(tk.Toplevel):
               top = tk.Toplevel(self)
               top.title("Ajouter un article")
 
-              # Créer des champs de saisie
+              # Create entry fields
               nom_article_label = tk.Label(top, text="Nom de l'article:")
               nom_article_label.pack()
               nom_article_entry = tk.Entry(top)
@@ -893,12 +893,12 @@ class CartApp(tk.Toplevel):
           def paiement_carte_credit(self):
               self.text_widget.delete(1.0, tk.END)
               self.text_widget.insert(tk.END, "Paiement par carte de crédit en cours...\n")
-              #Implement logique pour le payement par carte de credit
+              # Implement logic for credit card payment.
 
           def paiement_paypal(self):
               self.text_widget.delete(1.0, tk.END)
               self.text_widget.insert(tk.END, "Paiement par PayPal en cours...\n")
-              #Implement logique pour le payement PayPal
+              # Implement logic for PayPal payment.
 
         if __name__ == "__main__":
           app = PanierApp()
